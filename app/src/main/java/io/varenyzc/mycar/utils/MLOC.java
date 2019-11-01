@@ -28,7 +28,7 @@ import io.varenyzc.mycar.R;
 
 public class MLOC {
     public static Context appContext;
-    public static String userId = "car0001";
+    public static String userId = "";
 
     public static String VOIP_SERVER_URL          = "120.79.182.159:10086";
     public static String IM_SERVER_URL            = "120.79.182.159:19903";
