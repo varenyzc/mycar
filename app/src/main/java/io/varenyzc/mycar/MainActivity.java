@@ -33,6 +33,7 @@ import io.varenyzc.mycar.peripheral.UartManager;
 import io.varenyzc.mycar.utils.AEvent;
 import io.varenyzc.mycar.utils.InterfaceUrls;
 import io.varenyzc.mycar.utils.MLOC;
+import io.varenyzc.mycar.utils.StarNetUtil;
 
 /**
  * @author varenyzc
@@ -43,6 +44,7 @@ public class MainActivity extends Activity implements IEventListener {
     private boolean isLogin = false;
     private TextView tv_userId;
     private TextView tv_isLogin;
+    private TextView tv_ip;
 
     public static String CREATER_ID         = "CREATER_ID";          //创建者ID
     public static String LIVE_TYPE          = "LIVE_TYPE";           //创建信息
@@ -83,8 +85,10 @@ public class MainActivity extends Activity implements IEventListener {
         setContentView(R.layout.activity_main);
         tv_userId = findViewById(R.id.usrId);
         tv_isLogin = findViewById(R.id.isLogin);
+        tv_ip = findViewById(R.id.ip);
         MLOC.userId = MLOC.loadSharedData(getApplicationContext(),"userId");
         tv_userId.setText("userId:"+MLOC.userId);
+        tv_ip.setText(StarNetUtil.getIP(this));
         getActionBar().setDisplayHomeAsUpEnabled(true);
         getActionBar().setHomeButtonEnabled(true);
         PwmManager.getInstance().startPwm();
