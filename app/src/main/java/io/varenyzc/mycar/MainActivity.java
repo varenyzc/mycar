@@ -92,30 +92,10 @@ public class MainActivity extends Activity implements IEventListener {
         tv_ip.setText(StarNetUtil.getIP(this));
         getActionBar().setDisplayHomeAsUpEnabled(true);
         getActionBar().setHomeButtonEnabled(true);
-        //PwmManager.getInstance().startPwm();
+        PwmManager.getInstance().startPwm();
         UartManager.getInstance().init();
-        GpioManager.getInstance().init();
         addListener();
         createLive();
-        /*new Thread(new Runnable() {
-            @Override
-            public void run() {
-                while (true) {
-                    UartManager.getInstance().write("1\r\n");
-                    try {
-                        Thread.sleep(1000);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                    UartManager.getInstance().write("2\r\n");
-                    try {
-                        Thread.sleep(1000);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-        }).start();*/
     }
 
     private void createLive() {

@@ -13,7 +13,7 @@ import io.varenyzc.mycar.R;
 public class GpioManager {
 
     private Gpio GpioLeft;
-    private String gpioLeft = "BCM20";
+    private String gpioLeft = "BCM21";
 
     private PeripheralManager mPeripheralManager;
 
@@ -32,12 +32,27 @@ public class GpioManager {
         try {
             GpioLeft = mPeripheralManager.openGpio(gpioLeft);
             resetGpio(GpioLeft);
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    while(true){
+                        try {
+                            GpioLeft.setValue(true);
+                            Thread.sleep(5);
+                            GpioLeft.setValue(false);
+                            Thread.sleep(1);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+            }).start();
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    private void resetGpio(Gpio gpio){
+    private void resetGpio(final Gpio gpio){
         try {
             if(gpio!=null) {
                 gpio.setDirection(Gpio.DIRECTION_OUT_INITIALLY_LOW);//设置为输出，默认低电平
