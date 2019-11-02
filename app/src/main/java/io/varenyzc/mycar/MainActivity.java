@@ -28,6 +28,7 @@ import java.net.URLEncoder;
 
 import io.varenyzc.mycar.listener.IEventListener;
 import io.varenyzc.mycar.listener.XHLiveManagerListener;
+import io.varenyzc.mycar.peripheral.GpioManager;
 import io.varenyzc.mycar.peripheral.PwmManager;
 import io.varenyzc.mycar.peripheral.UartManager;
 import io.varenyzc.mycar.utils.AEvent;
@@ -91,10 +92,30 @@ public class MainActivity extends Activity implements IEventListener {
         tv_ip.setText(StarNetUtil.getIP(this));
         getActionBar().setDisplayHomeAsUpEnabled(true);
         getActionBar().setHomeButtonEnabled(true);
-        PwmManager.getInstance().startPwm();
+        //PwmManager.getInstance().startPwm();
         UartManager.getInstance().init();
+        GpioManager.getInstance().init();
         addListener();
         createLive();
+        /*new Thread(new Runnable() {
+            @Override
+            public void run() {
+                while (true) {
+                    UartManager.getInstance().write("1\r\n");
+                    try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    UartManager.getInstance().write("2\r\n");
+                    try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }).start();*/
     }
 
     private void createLive() {
@@ -230,8 +251,10 @@ public class MainActivity extends Activity implements IEventListener {
                 Log.d(TAG, "dispatchEvent: "+revMsgPrivate.contentData);
                 PwmManager.getInstance().gotCommand(revMsgPrivate.contentData);
                 if(!revMsgPrivate.contentData.contains("camera")){
-                    UartManager.getInstance().write(revMsgPrivate.contentData+"\r\n");
-                    Log.d("varenyzc2", revMsgPrivate.contentData+"\r\n");
+                    UartManager.getInstance().write( revMsgPrivate.contentData+"\r\n");
+                    //System.out.println(revMsgPrivate.contentData);
+                    Log.d("varenyzc2", revMsgPrivate.contentData + "\r\n");
+
                 }
                 break;
         }
