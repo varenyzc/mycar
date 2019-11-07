@@ -75,8 +75,10 @@ public class MainActivity extends Activity implements IEventListener {
         isLogin = XHClient.getInstance().getIsOnline();
         if (isLogin) {
             tv_isLogin.setText("当前在线");
+            GpioManager.getInstance().switchNetLed(true);
         } else {
             tv_isLogin.setText("当前掉线，请检查网络状态");
+            GpioManager.getInstance().switchNetLed(false);
         }
     }
 
@@ -202,8 +204,10 @@ public class MainActivity extends Activity implements IEventListener {
                 if (findViewById(R.id.isLogin) != null) {
                     if (XHClient.getInstance().getIsOnline()) {
                         tv_isLogin.setText("当前在线");
+                        GpioManager.getInstance().switchNetLed(true);
                     } else {
                         tv_isLogin.setText("当前掉线，请检查网络状态");
+                        GpioManager.getInstance().switchNetLed(false);
                     }
                 }
                 break;
@@ -211,8 +215,10 @@ public class MainActivity extends Activity implements IEventListener {
                 if (findViewById(R.id.isLogin) != null) {
                     if (XHClient.getInstance().getIsOnline()) {
                         tv_isLogin.setText("当前在线");
+                        GpioManager.getInstance().switchNetLed(true);
                     } else {
                         tv_isLogin.setText("当前掉线，请检查网络状态");
+                        GpioManager.getInstance().switchNetLed(false);
                     }
                 }
                 break;
@@ -232,7 +238,6 @@ public class MainActivity extends Activity implements IEventListener {
                 PwmManager.getInstance().gotCommand(revMsgPrivate.contentData);
                 if(!revMsgPrivate.contentData.contains("camera")){
                     UartManager.getInstance().write( revMsgPrivate.contentData+"\r\n");
-                    //System.out.println(revMsgPrivate.contentData);
                     Log.d("varenyzc2", revMsgPrivate.contentData + "\r\n");
 
                 }

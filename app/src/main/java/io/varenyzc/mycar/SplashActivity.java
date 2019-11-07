@@ -20,9 +20,12 @@ import android.view.View;
 import android.view.WindowManager;
 import android.view.animation.Animation;
 
+import com.google.android.things.pio.Gpio;
+
 import java.util.ArrayList;
 import java.util.List;
 
+import io.varenyzc.mycar.peripheral.GpioManager;
 import io.varenyzc.mycar.services.KeepLiveService;
 import io.varenyzc.mycar.utils.AEvent;
 
@@ -36,6 +39,8 @@ public class SplashActivity extends Activity {
         getWindow().setFlags(WindowManager.LayoutParams. FLAG_FULLSCREEN ,
                 WindowManager.LayoutParams. FLAG_FULLSCREEN);
         setContentView(R.layout.activity_splash);
+        GpioManager.getInstance().init();
+        GpioManager.getInstance().switchSysLed(true);
         AEvent.setHandler(new Handler());
         checkPermission();
     }

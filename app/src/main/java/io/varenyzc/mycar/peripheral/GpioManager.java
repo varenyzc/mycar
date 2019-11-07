@@ -12,8 +12,10 @@ import io.varenyzc.mycar.R;
 
 public class GpioManager {
 
-    private Gpio GpioLeft;
-    private String gpioLeft = "BCM21";
+    private Gpio SysLed;
+    private String gpioSys = "BCM12";  //系统开机灯
+    private Gpio NetLed;
+    private String gpioLed = "BCM5";   //网络灯
 
     private PeripheralManager mPeripheralManager;
 
@@ -30,23 +32,10 @@ public class GpioManager {
     public void init(){
         mPeripheralManager = PeripheralManager.getInstance();
         try {
-            GpioLeft = mPeripheralManager.openGpio(gpioLeft);
-            resetGpio(GpioLeft);
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    while(true){
-                        try {
-                            GpioLeft.setValue(true);
-                            Thread.sleep(5);
-                            GpioLeft.setValue(false);
-                            Thread.sleep(1);
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-                    }
-                }
-            }).start();
+            SysLed = mPeripheralManager.openGpio(gpioSys);
+            NetLed = mPeripheralManager.openGpio(gpioLed);
+            resetGpio(SysLed);
+            resetGpio(NetLed);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -57,11 +46,26 @@ public class GpioManager {
             if(gpio!=null) {
                 gpio.setDirection(Gpio.DIRECTION_OUT_INITIALLY_LOW);//设置为输出，默认低电平
                 gpio.setActiveType(Gpio.ACTIVE_HIGH);//设置高电平为活跃的
-                //gpio.setValue(false);//设置成低电平
+                gpio.setValue(false);//设置成低电平
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
+    public void switchSysLed(boolean b) {
+        try {
+            SysLed.setValue(b);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void switchNetLed(boolean b) {
+        try {
+            NetLed.setValue(b);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 }
