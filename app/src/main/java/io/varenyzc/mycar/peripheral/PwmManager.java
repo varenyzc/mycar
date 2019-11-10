@@ -33,7 +33,7 @@ public class PwmManager {
     public AtomicBoolean running = new AtomicBoolean(true);
     public AtomicInteger camearV = new AtomicInteger(30);
     public AtomicInteger camearH = new AtomicInteger(90);
-    private int lastCameraV = 30;
+    private int lastCameraV = 70;
     private int lastCameraH = 90;
 
     private PeripheralManager manager;
@@ -196,7 +196,7 @@ public class PwmManager {
                         break;
                     case "cameraReset":
                         camearH.set(90);
-                        camearV.set(30);
+                        camearV.set(70);
                         break;
                 }
                 changePwm();

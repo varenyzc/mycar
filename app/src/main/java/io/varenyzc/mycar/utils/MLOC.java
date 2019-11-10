@@ -29,13 +29,15 @@ import io.varenyzc.mycar.R;
 public class MLOC {
     public static Context appContext;
     public static String userId = "";
+    public static String liveId = "";
+    public static String BASE_URL = "120.79.182.159";
 
-    public static String VOIP_SERVER_URL          = "120.79.182.159:10086";
-    public static String IM_SERVER_URL            = "120.79.182.159:19903";
-    public static String CHATROOM_SERVER_URL      = "120.79.182.159:19906";
-    public static String LIVE_VDN_SERVER_URL      = "120.79.182.159:19928";
-    public static String LIVE_SRC_SERVER_URL      = "120.79.182.159:19931";
-    public static String LIVE_PROXY_SERVER_URL    = "120.79.182.159:19932";
+    public static String VOIP_SERVER_URL          = BASE_URL + ":10086";
+    public static String IM_SERVER_URL            = BASE_URL + ":19903";
+    public static String CHATROOM_SERVER_URL      = BASE_URL + ":19906";
+    public static String LIVE_VDN_SERVER_URL      = BASE_URL + ":19928";
+    public static String LIVE_SRC_SERVER_URL      = BASE_URL + ":19931";
+    public static String LIVE_PROXY_SERVER_URL    = BASE_URL + ":19932";
 
     public static Boolean AEventCenterEnable = false;
 
@@ -80,6 +82,7 @@ public class MLOC {
         appContext = context.getApplicationContext();
 
         userId = loadSharedData(context,"userId",userId);
+        liveId = loadSharedData(context, "liveId", liveId);
 
         VOIP_SERVER_URL         = loadSharedData(context,"VOIP_SERVER_URL",VOIP_SERVER_URL);
         IM_SERVER_URL           = loadSharedData(context,"IM_SERVER_URL",IM_SERVER_URL);
@@ -165,6 +168,11 @@ public class MLOC {
     public static void saveUserId(String id){
         MLOC.userId = id;
         MLOC.saveSharedData(appContext,"userId",MLOC.userId);
+    }
+
+    public static void saveLiveId(String id) {
+        MLOC.liveId = id;
+        MLOC.saveSharedData(appContext,"liveId",MLOC.liveId);
     }
 
     public static void saveVoipServerUrl(String voipServerUrl){

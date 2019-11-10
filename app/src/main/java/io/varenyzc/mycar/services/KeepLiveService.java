@@ -16,6 +16,8 @@ import com.starrtc.starrtcsdk.core.videosrc.XHVideoSourceManager;
 
 import java.util.Random;
 
+import io.varenyzc.mycar.MainActivity;
+import io.varenyzc.mycar.R;
 import io.varenyzc.mycar.listener.DemoVideoSourceCallback;
 import io.varenyzc.mycar.listener.IEventListener;
 import io.varenyzc.mycar.listener.XHChatManagerListener;
@@ -23,6 +25,7 @@ import io.varenyzc.mycar.listener.XHGroupManagerListener;
 import io.varenyzc.mycar.listener.XHLoginManagerListener;
 import io.varenyzc.mycar.listener.XHVoipManagerListener;
 import io.varenyzc.mycar.listener.XHVoipP2PManagerListener;
+import io.varenyzc.mycar.peripheral.GpioManager;
 import io.varenyzc.mycar.utils.AEvent;
 import io.varenyzc.mycar.utils.MLOC;
 
@@ -91,8 +94,7 @@ public class KeepLiveService extends Service implements IEventListener {
             customConfig.setDefConfigIsIotDevice(true);
             /*customConfig.setCustomEncoderConfig(640,480,
                     640,480,30,1024,45);*/
-            customConfig.setDefConfigVideoSize(XHConstants.XHCropTypeEnum.STAR_VIDEO_CONFIG_360BW_640BH_180SW_320SH);
-            //customConfig.setDefConfigVideoSize(XHConstants.XHCropTypeEnum.STAR_VIDEO_CONFIG_720BW_1280BH_360SW_640SH );
+            customConfig.setDefConfigVideoSize(XHConstants.XHCropTypeEnum.STAR_VIDEO_CONFIG_360BW_640BH_180SW_320SH); //垃圾摄像头
             XHClient.getInstance().getChatManager().addListener(new XHChatManagerListener());
             XHClient.getInstance().getGroupManager().addListener(new XHGroupManagerListener());
             XHClient.getInstance().getVoipManager().addListener(new XHVoipManagerListener());
@@ -118,6 +120,20 @@ public class KeepLiveService extends Service implements IEventListener {
     @Override
     public void dispatchEvent(String aEventID, boolean success, Object eventObj) {
         switch (aEventID){
+            case AEvent.AEVENT_USER_OFFLINE:
+                    if (XHClient.getInstance().getIsOnline()) {
+                        GpioManager.getInstance().switchNetLed(true);
+                    } else {
+                        GpioManager.getInstance().switchNetLed(false);
+                    }
+                break;
+            case AEvent.AEVENT_USER_ONLINE:
+                    if (XHClient.getInstance().getIsOnline()) {
+                        GpioManager.getInstance().switchNetLed(true);
+                    } else {
+                        GpioManager.getInstance().switchNetLed(false);
+                    }
+                break;
             case AEvent.AEVENT_VOIP_REV_CALLING:
                 if(MLOC.canPickupVoip){
                     /*Intent intent = new Intent(this, VoipRingingActivity.class);
@@ -170,6 +186,8 @@ public class KeepLiveService extends Service implements IEventListener {
 
 
     private void addListener(){
+        AEvent.addListener(AEvent.AEVENT_USER_OFFLINE, this);
+        AEvent.addListener(AEvent.AEVENT_USER_ONLINE,this);
         AEvent.addListener(AEvent.AEVENT_LOGOUT,this);
         AEvent.addListener(AEvent.AEVENT_VOIP_REV_CALLING,this);
         AEvent.addListener(AEvent.AEVENT_VOIP_REV_CALLING_AUDIO,this);
@@ -178,6 +196,8 @@ public class KeepLiveService extends Service implements IEventListener {
         AEvent.addListener(AEvent.AEVENT_GROUP_REV_MSG,this);
     }
     private void removeListener(){
+        AEvent.removeListener(AEvent.AEVENT_USER_OFFLINE, this);
+        AEvent.removeListener(AEvent.AEVENT_USER_ONLINE,this);
         AEvent.removeListener(AEvent.AEVENT_LOGOUT,this);
         AEvent.removeListener(AEvent.AEVENT_VOIP_REV_CALLING,this);
         AEvent.removeListener(AEvent.AEVENT_VOIP_REV_CALLING_AUDIO,this);

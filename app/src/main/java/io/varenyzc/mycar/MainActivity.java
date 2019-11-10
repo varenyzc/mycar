@@ -90,6 +90,7 @@ public class MainActivity extends Activity implements IEventListener {
         tv_isLogin = findViewById(R.id.isLogin);
         tv_ip = findViewById(R.id.ip);
         MLOC.userId = MLOC.loadSharedData(getApplicationContext(),"userId");
+        liveId = MLOC.loadSharedData(getApplicationContext(), "liveId");
         tv_userId.setText("userId:"+MLOC.userId);
         tv_ip.setText(StarNetUtil.getIP(this));
         getActionBar().setDisplayHomeAsUpEnabled(true);
@@ -101,10 +102,6 @@ public class MainActivity extends Activity implements IEventListener {
     }
 
     private void createLive() {
-        /*mXHSDKHelper = new XHSDKHelper();
-        mXHSDKHelper.setDefaultCameraId(0);
-        //mXHSDKHelper.startPerview(this,mStarPlayer);*/
-
         init();
     }
 
@@ -116,7 +113,7 @@ public class MainActivity extends Activity implements IEventListener {
         liveManager.setRtcMediaType(XHConstants.XHRtcMediaTypeEnum.STAR_RTC_MEDIA_TYPE_VIDEO_ONLY);
         liveManager.setRecorder(new XHCameraRecorder());
         liveManager.addListener(new XHLiveManagerListener());
-        if (liveId == null) {
+        if (liveId.equals("")) {
             createNewLive();
         }else{
             starLive();
@@ -129,6 +126,7 @@ public class MainActivity extends Activity implements IEventListener {
             @Override
             public void success(Object data) {
                 MLOC.d("XHLiveManager","startLive success "+data);
+                XHClient.getInstance().getChatManager().sendOnlineMessage(liveId,"varenyzc",null);
             }
             @Override
             public void failed(final String errMsg) {
@@ -148,6 +146,7 @@ public class MainActivity extends Activity implements IEventListener {
             @Override
             public void success(Object data) {
                 liveId = (String) data;
+                MLOC.saveLiveId(liveId);
                 starLive();
 //上报到直播列表
                 try {
@@ -177,6 +176,7 @@ public class MainActivity extends Activity implements IEventListener {
     }
 
     private void addListener() {
+        AEvent.addListener(AEvent.AEVENT_C2C_REV_MSG,this);
         AEvent.addListener(AEvent.AEVENT_USER_ONLINE,this);
         AEvent.addListener(AEvent.AEVENT_USER_OFFLINE,this);
         AEvent.addListener(AEvent.AEVENT_LIVE_REV_REALTIME_DATA,this);
@@ -184,6 +184,7 @@ public class MainActivity extends Activity implements IEventListener {
     }
 
     private void removeListener(){
+        AEvent.removeListener(AEvent.AEVENT_C2C_REV_MSG,this);
         AEvent.removeListener(AEvent.AEVENT_USER_ONLINE,this);
         AEvent.removeListener(AEvent.AEVENT_USER_OFFLINE,this);
         AEvent.removeListener(AEvent.AEVENT_LIVE_REV_REALTIME_DATA,this);
@@ -235,11 +236,18 @@ public class MainActivity extends Activity implements IEventListener {
             case AEvent.AEVENT_LIVE_REV_MSG:
                 XHIMMessage revMsgPrivate = (XHIMMessage) eventObj;
                 Log.d(TAG, "dispatchEvent: "+revMsgPrivate.contentData);
-                PwmManager.getInstance().gotCommand(revMsgPrivate.contentData);
-                if(!revMsgPrivate.contentData.contains("camera")){
+                if(revMsgPrivate.contentData.contains("camera")){
+                    PwmManager.getInstance().gotCommand(revMsgPrivate.contentData);
+                } else{
                     UartManager.getInstance().write( revMsgPrivate.contentData+"\r\n");
                     Log.d("varenyzc2", revMsgPrivate.contentData + "\r\n");
-
+                }
+                break;
+            case AEvent.AEVENT_C2C_REV_MSG:
+                XHIMMessage message = (XHIMMessage) eventObj;
+                String commond = message.contentData;
+                if (commond.equals("MyCarStart")) {
+                    XHClient.getInstance().getChatManager().sendOnlineMessage(liveId,"varenyzc",null);
                 }
                 break;
         }

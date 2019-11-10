@@ -68,4 +68,14 @@ public class GpioManager {
             e.printStackTrace();
         }
     }
+
+    public void close() {
+        try {
+            SysLed.close();
+            NetLed.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
 }

@@ -21,15 +21,19 @@ import android.view.WindowManager;
 import android.view.animation.Animation;
 
 import com.google.android.things.pio.Gpio;
+import com.starrtc.starrtcsdk.api.XHClient;
+import com.starrtc.starrtcsdk.core.im.message.XHIMMessage;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import io.varenyzc.mycar.listener.IEventListener;
 import io.varenyzc.mycar.peripheral.GpioManager;
 import io.varenyzc.mycar.services.KeepLiveService;
 import io.varenyzc.mycar.utils.AEvent;
+import io.varenyzc.mycar.utils.MLOC;
 
-public class SplashActivity extends Activity {
+public class SplashActivity extends Activity implements IEventListener {
 
     private boolean isLogin = false;
 
@@ -42,8 +46,18 @@ public class SplashActivity extends Activity {
         GpioManager.getInstance().init();
         GpioManager.getInstance().switchSysLed(true);
         AEvent.setHandler(new Handler());
+        addListener();
         checkPermission();
     }
+
+    private void addListener() {
+        AEvent.addListener(AEvent.AEVENT_C2C_REV_MSG,this);
+    }
+
+    private void removeListener(){
+        AEvent.removeListener(AEvent.AEVENT_C2C_REV_MSG, this);
+    }
+
     private int times = 0;
     private final int REQUEST_PHONE_PERMISSIONS = 0;
     private void checkPermission(){
@@ -91,7 +105,7 @@ public class SplashActivity extends Activity {
 
     private void initSDK(){
         startService();
-        startAnimation();
+        //startAnimation();
     }
 
 
@@ -104,6 +118,15 @@ public class SplashActivity extends Activity {
     public void onRequestPermissionsResult(int requestCode,  final String[] permissions, int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         checkPermission();
+    }
+
+    private void startCar(){
+        isLogin = true;
+        if (isLogin) {
+            startActivity(new Intent(SplashActivity.this,MainActivity.class));
+            removeListener();
+            finish();
+        }
     }
 
     @SuppressLint("WrongConstant")
@@ -177,5 +200,20 @@ public class SplashActivity extends Activity {
             }
         });
         va.start();
+    }
+
+    @Override
+    public void dispatchEvent(String aEventID, boolean success, Object eventObj) {
+        switch (aEventID) {
+            case AEvent.AEVENT_C2C_REV_MSG:
+                XHIMMessage message = (XHIMMessage) eventObj;
+                String commond = message.contentData;
+                if (commond.equals("MyCarStart")) {
+                    startCar();
+                    //MLOC.d("varenyzc", commond);
+                    //XHClient.getInstance().getChatManager().sendOnlineMessage("mycar_1", "mycar", null);
+                }
+                break;
+        }
     }
 }
